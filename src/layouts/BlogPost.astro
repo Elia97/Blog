@@ -1,86 +1,178 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import Header from "../components/Header.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import SeriesSidebar from "../components/SeriesSidebar.astro";
 
-type Props = CollectionEntry<'blog'>['data'];
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  series?: string;
+  order?: number;
+  prev?: CollectionEntry<"blog"> | null;
+  next?: CollectionEntry<"blog"> | null;
+  headings?: { depth: number; slug: string; text: string }[];
+}
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  series,
+  order,
+  prev,
+  next,
+  headings,
+} = Astro.props;
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<html lang="it">
+  <head>
+    <BaseHead title={title} description={description} />
+    <style>
+      main {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 2rem 1rem; /* Ripristinato padding originale */
+        box-sizing: border-box;
+      }
+      .prose {
+        width: 720px;
+        max-width: 100%;
+        margin: 0 auto;
+        color: rgb(var(--gray-dark));
+      }
+      .title {
+        margin-bottom: 1em;
+        text-align: center;
+        line-height: 1;
+      }
+      .title h1 {
+        margin: 0 0 0.5em 0;
+      }
+      .series-info {
+        padding: 0.5em 1em;
+        background: rgb(var(--gray-light));
+        border-radius: 8px;
+        margin-bottom: 1em;
+        font-size: 0.9em;
+        color: rgb(var(--gray-dark));
+        text-transform: capitalize;
+      }
+      @media (max-width: 720px) {
+        .title h1 {
+          font-size: 1.8em;
+        }
+        .pagination {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .next {
+          text-align: left;
+          margin-left: 0;
+        }
+      }
+      .date {
+        margin-bottom: 0.5em;
+        color: rgb(var(--gray));
+      }
+      .last-updated-on {
+        font-style: italic;
+      }
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgb(var(--gray-light));
+      }
+      .pagination a {
+        text-decoration: none;
+        color: rgb(var(--accent));
+        font-weight: bold;
+        max-width: 45%;
+      }
+      .pagination a:hover {
+        text-decoration: underline;
+      }
+      .prev {
+        text-align: left;
+      }
+      .next {
+        text-align: right;
+        margin-left: auto;
+      }
+      .nav-label {
+        display: block;
+        font-size: 0.8rem;
+        color: rgb(var(--gray));
+        text-transform: uppercase;
+        margin-bottom: 0.2rem;
+      }
+    </style>
+  </head>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
+  <body>
+    <Header />
+    <main>
+      <article>
+        <SeriesSidebar currentSeries={series} />
+        {headings && <TableOfContents headings={headings} />}
+        <div class="prose">
+          <div class="title">
+            <div class="date">
+              <FormattedDate date={pubDate} />
+              {
+                updatedDate && (
+                  <div class="last-updated-on">
+                    Last updated on <FormattedDate date={updatedDate} />
+                  </div>
+                )
+              }
+            </div>
+            <h1>{title}</h1>
+            {
+              series && (
+                <div class="series-info">
+                  <span>
+                    Parte della serie:{" "}
+                    <strong>{series.replace(/-/g, " ")}</strong> (Capitolo{" "}
+                    {order})
+                  </span>
+                </div>
+              )
+            }
+            <hr />
+          </div>
+          <slot />
+          {
+            (prev || next) && (
+              <nav class="pagination">
+                {prev && (
+                  <a href={`/blog/${prev.id}/`} class="prev">
+                    <span class="nav-label">← Precedente</span>
+                    {prev.data.title}
+                  </a>
+                )}
+                {next && (
+                  <a href={`/blog/${next.id}/`} class="next">
+                    <span class="nav-label">Successivo →</span>
+                    {next.data.title}
+                  </a>
+                )}
+              </nav>
+            )
+          }
+        </div>
+      </article>
+    </main>
+    <Footer />
+  </body>
 </html>

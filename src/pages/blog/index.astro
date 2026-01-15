@@ -1,114 +1,162 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import FormattedDate from "../../components/FormattedDate.astro";
+import Layout from "../../layouts/BaseLayout.astro";
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const posts = await getCollection("blog");
+
+// Definizione del tipo per i post raggruppati
+type GroupedPosts = Record<string, CollectionEntry<"blog">[]>;
+
+// Raggruppiamo i post per serie
+const groupedPosts = posts.reduce((acc: GroupedPosts, post) => {
+  const seriesName = post.data.series || "Articoli Singoli";
+  if (!acc[seriesName]) {
+    acc[seriesName] = [];
+  }
+  acc[seriesName].push(post);
+  return acc;
+}, {});
+
+// Ordiniamo ogni gruppo: se ha 'order' usiamo quello, altrimenti la data
+Object.keys(groupedPosts).forEach((series) => {
+  groupedPosts[series].sort((a, b) => {
+    const orderA = a.data.order ?? Infinity;
+    const orderB = b.data.order ?? Infinity;
+
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  });
+});
+
+// Ordiniamo le serie (mettiamo gli Articoli Singoli per ultimi)
+const sortedSeries = Object.keys(groupedPosts).sort((a, b) => {
+  if (a === "Articoli Singoli") return 1;
+  if (b === "Articoli Singoli") return -1;
+  return a.localeCompare(b);
+});
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Layout>
+  <slot name="style">
+    <style>
+      .series-section {
+        margin-bottom: 3rem;
+        border-bottom: 2px solid rgba(var(--gray-light), 0.3);
+        scroll-margin-top: 100px; /* Offset per l'header floating nella pagina blog */
+      }
+      .series-title {
+        text-transform: capitalize;
+        border-bottom: 2px solid rgb(var(--accent));
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        color: rgb(var(--black));
+      }
+      .post-list {
+        list-style-type: none;
+        padding: 0;
+      }
+      .post-item {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        position: relative;
+        border: 1px solid transparent;
+      }
+
+      /* Desktop: Hover effects */
+      @media (hover: hover) {
+        .post-item:hover {
+          background-color: rgba(var(--accent), 0.05);
+          transform: translateX(8px);
+          border-color: rgba(var(--accent), 0.1);
+        }
+        .post-item:hover .post-link {
+          color: rgb(var(--accent));
+        }
+      }
+
+      /* Mobile/Touch: Feedback on tap */
+      .post-item:active {
+        background-color: rgba(var(--accent), 0.1);
+        transform: scale(0.98);
+        transition: transform 0.1s;
+      }
+
+      .chapter-number {
+        font-weight: bold;
+        color: rgb(var(--accent));
+        min-width: 4rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+      }
+      .post-link {
+        text-decoration: none;
+        color: rgb(var(--black));
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+      /* Rende l'intero box cliccabile */
+      .post-link::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+      .post-date {
+        color: rgb(var(--gray));
+        font-size: 0.9rem;
+        margin-left: auto;
+      }
+      @media (max-width: 720px) {
+        .post-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.2rem;
+          padding: 1.25rem 1rem;
+          background: white;
+          border: 1px solid rgba(var(--gray-light), 0.5);
+          margin-bottom: 0.5rem;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+        .chapter-number {
+          font-size: 0.75rem;
+          min-width: auto;
+        }
+        .post-date {
+          margin-left: 0;
+          margin-top: 0.25rem;
+        }
+      }
+    </style>
+  </slot>
+
+  {
+    sortedSeries.map((series) => (
+      <section class="series-section" id={series}>
+        <h2 class="series-title">{series.replace(/-/g, " ")}</h2>
+        <ul class="post-list">
+          {groupedPosts[series].map((post) => (
+            <li class="post-item">
+              {post.data.order && (
+                <span class="chapter-number">Cap. {post.data.order}</span>
+              )}
+              <a class="post-link" href={`/blog/${post.id}/`}>
+                {post.data.title}
+              </a>
+              <span class="post-date">
+                <FormattedDate date={post.data.pubDate} />
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</Layout>

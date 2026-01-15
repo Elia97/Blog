@@ -1,20 +1,47 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import BlogPost from "../../layouts/BlogPost.astro";
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
-	return posts.map((post) => ({
-		params: { slug: post.id },
-		props: post,
-	}));
-}
-type Props = CollectionEntry<'blog'>;
+  const posts = await getCollection("blog");
 
-const post = Astro.props;
-const { Content } = await render(post);
+  // Ordiniamo i post nello stesso modo della pagina index
+  const sortedPosts = posts.sort((a, b) => {
+    // Ordina per serie prima
+    const seriesA = a.data.series || "";
+    const seriesB = b.data.series || "";
+    if (seriesA !== seriesB) return seriesA.localeCompare(seriesB);
+
+    // Poi per ordine (se presente)
+    const orderA = a.data.order ?? Infinity;
+    const orderB = b.data.order ?? Infinity;
+    if (orderA !== orderB) return orderA - orderB;
+
+    // Infine per data
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  });
+
+  return sortedPosts.map((post, index) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      prev:
+        index > 0 && sortedPosts[index - 1].data.series === post.data.series
+          ? sortedPosts[index - 1]
+          : null,
+      next:
+        index < sortedPosts.length - 1 &&
+        sortedPosts[index + 1].data.series === post.data.series
+          ? sortedPosts[index + 1]
+          : null,
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content, headings } = await render(post);
 ---
 
-<BlogPost {...post.data}>
-	<Content />
+<BlogPost {...post.data} prev={prev} next={next} headings={headings}>
+  <Content />
 </BlogPost>
