@@ -8,7 +8,7 @@ order: 2
 ---
 
 <div class="callout note">
-  🚀 <strong>In sintesi:</strong> Node.js è un ambiente di runtime JavaScript open source e multipiattaforma basato sul leggendario motore V8 di Chrome.
+  <strong>In sintesi:</strong> Node.js è un ambiente di runtime JavaScript open source e multipiattaforma basato sul leggendario motore V8 di Chrome.
 </div>
 
 Per comprendere appieno Node.js, dobbiamo osservare i tre pilastri che ne sorreggono l'architettura:
@@ -27,27 +27,27 @@ Dimentica l'elaborazione sequenziale. Node.js ragiona in modo differente attrave
 
 <div class="feature-list">
   <div class="feature-item">
-    <strong>⚡ Asincronia Totale</strong>
+    <strong>Asincronia Totale</strong>
     Non aspetta mai. Delega il lavoro pesante all'Event Loop e passa immediatamente al compito successivo.
   </div>
   <div class="feature-item">
-    <strong>📡 Event-Driven</strong>
+    <strong>Event-Driven</strong>
     Tutto ruota attorno agli eventi. Il sistema rimane in ascolto e reagisce prontamente tramite gli event handler.
   </div>
   <div class="feature-item">
-    <strong>🌊 Stream dei Dati</strong>
+    <strong>Stream dei Dati</strong>
     Processa i dati come un flusso continuo (chunk), non come blocchi massicci. Risparmia memoria e accelera la risposta.
   </div>
   <div class="feature-item">
-    <strong>🧵 Single-Thread, High Power</strong>
+    <strong>Single-Thread, High Power</strong>
     Gira su un solo thread principale, ma gestisce migliaia di connessioni simultanee grazie all'I/O non bloccante.
   </div>
   <div class="feature-item">
-    <strong>📈 Alta Scalabilità</strong>
+    <strong>Alta Scalabilità</strong>
     Nato per crescere. Gestisce carichi enormi con un overhead minimo, perfetto per il panorama cloud moderno.
   </div>
   <div class="feature-item">
-    <strong>🏎️ Motore V8</strong>
+    <strong>Motore V8</strong>
     Compila JavaScript direttamente in codice macchina. È la Ferrari dei motori di esecuzione.
   </div>
 </div>
@@ -74,14 +74,14 @@ Dimentica l'elaborazione sequenziale. Node.js ragiona in modo differente attrave
 
 Nonostante la sintassi sia la stessa, l'habitat cambia radicalmente le regole del gioco:
 
-| Caratteristica | 🌐 JavaScript (Browser) | 🟢 Node.js (Server) |
-| :--- | :--- | :--- |
-| **Obiettivo** | Interazione UI e DOM | Logica Server e Network |
-| **Esecuzione** | Dentro il Browser | Direttamente sull'OS |
-| **Accesso File** | No (per sicurezza) | Sì (completo) |
-| **Oggetto Global** | `window` | `global` |
-| **Motori** | V8, SpiderMonkey, etc. | Solo V8 |
-| **Habitat** | Client-Side | Server-Side |
+| Caratteristica     | JavaScript (Browser)   | Node.js (Server)        |
+| :----------------- | :--------------------- | :---------------------- |
+| **Obiettivo**      | Interazione UI e DOM   | Logica Server e Network |
+| **Esecuzione**     | Dentro il Browser      | Direttamente sull'OS    |
+| **Accesso File**   | No (per sicurezza)     | Sì (completo)           |
+| **Oggetto Global** | `window`               | `global`                |
+| **Motori**         | V8, SpiderMonkey, etc. | Solo V8                 |
+| **Habitat**        | Client-Side            | Server-Side             |
 
 ---
 
