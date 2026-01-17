@@ -4,7 +4,7 @@ description: "Le fondamenta tecniche di Node.js: come il motore V8 e il sistema 
 pubDate: "Jan 14 2026"
 tags: ["v8", "architettura", "io", "libuv"]
 series: "primi-passi-con-nodejs"
-order: 4
+order: 5
 ---
 
 <div class="callout note">

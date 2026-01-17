@@ -99,3 +99,7 @@ npm -v
 ```
 
 Se vedi i numeri di versione (ad esempio `v24.x.x` e `11.x.x`), complimenti! Node.js è configurato correttamente.
+
+---
+
+Ora che Node.js è pronto sul tuo sistema, è il momento di provarlo subito senza nemmeno creare un file. Nel prossimo articolo scopriremo il **REPL**, il tuo primo terreno di gioco interattivo.
