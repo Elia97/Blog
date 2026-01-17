@@ -2,6 +2,7 @@
 import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import PlaygroundContainer from "../components/Playground/PlaygroundContainer";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 ---
 
@@ -15,5 +16,6 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
     <Header />
     <main><slot /></main>
     <Footer />
+    <PlaygroundContainer client:load />
   </body>
 </html>

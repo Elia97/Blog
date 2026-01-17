@@ -6,6 +6,7 @@ import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
 import TableOfContents from "../components/TableOfContents.astro";
 import SeriesSidebar from "../components/SeriesSidebar.astro";
+import PlaygroundContainer from "../components/Playground/PlaygroundContainer";
 
 interface Props {
   title: string;
@@ -174,5 +175,6 @@ const {
       </article>
     </main>
     <Footer />
+    <PlaygroundContainer client:load />
   </body>
 </html>

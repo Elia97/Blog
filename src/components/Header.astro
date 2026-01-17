@@ -26,13 +26,28 @@ import { Icon } from "astro-icon/components";
       </HeaderLink>
     </div>
     <div class="social-links">
-      <a href="https://github.com/withastro/astro" target="_blank">
-        <span class="sr-only">Go to Astro's GitHub repo</span>
-        <Icon name="lucide:github" width={24} height={24} />
-      </a>
+      <button
+        id="open-playground"
+        class="playground-btn"
+        aria-label="Apri Playground"
+      >
+        <Icon name="lucide:terminal" width={24} height={24} />
+      </button>
     </div>
   </nav>
 </header>
+
+<script>
+  import { openPlayground } from "./Playground/store";
+
+  const btn = document.getElementById("open-playground");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      openPlayground();
+    });
+  }
+</script>
+
 <style>
   header {
     margin: 1rem auto;
@@ -73,12 +88,35 @@ import { Icon } from "astro-icon/components";
 
   nav {
     display: grid;
-    /* Usiamo larghezze fisse per le colonne laterali per garantire la centratura perfetta del blocco centrale */
-    grid-template-columns: 100px 1fr 100px;
+    /* Adattiamo le colonne per far spazio al bottone */
+    grid-template-columns: 80px 1fr auto;
     align-items: center;
     height: 64px;
     gap: 0.5rem;
   }
+
+  .playground-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    background: transparent;
+    color: var(--black);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .playground-btn:hover {
+    background: rgba(var(--accent), 0.05);
+    color: var(--accent);
+  }
+
+  .playground-btn:active {
+    transform: scale(0.95);
+  }
+
   .internal-links {
     display: flex;
     justify-content: center;
